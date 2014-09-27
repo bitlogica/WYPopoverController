@@ -1948,18 +1948,20 @@ static WYPopoverTheme *defaultTheme_ = nil;
         
         if (strongSelf)
         {
-            if ([strongSelf->viewController isKindOfClass:[UINavigationController class]] == NO)
-            {
-                [strongSelf->viewController viewDidAppear:YES];
-            }
-            
-            if ([strongSelf->viewController respondsToSelector:@selector(preferredContentSize)])
-            {
-                [strongSelf->viewController addObserver:self forKeyPath:NSStringFromSelector(@selector(preferredContentSize)) options:0 context:nil];
-            }
-            else
-            {
-                [strongSelf->viewController addObserver:self forKeyPath:NSStringFromSelector(@selector(contentSizeForViewInPopover)) options:0 context:nil];
+            if (strongSelf->backgroundView.appearing) {
+                if ([strongSelf->viewController isKindOfClass:[UINavigationController class]] == NO)
+                {
+                    [strongSelf->viewController viewDidAppear:YES];
+                }
+                
+                if ([strongSelf->viewController respondsToSelector:@selector(preferredContentSize)])
+                {
+                    [strongSelf->viewController addObserver:self forKeyPath:NSStringFromSelector(@selector(preferredContentSize)) options:0 context:nil];
+                }
+                else
+                {
+                    [strongSelf->viewController addObserver:self forKeyPath:NSStringFromSelector(@selector(contentSizeForViewInPopover)) options:0 context:nil];
+                }
             }
             
             strongSelf->backgroundView.appearing = NO;
@@ -2583,6 +2585,8 @@ static WYPopoverTheme *defaultTheme_ = nil;
     WYPopoverAnimationOptions style = aOptions;
     
     __weak __typeof__(self) weakSelf = self;
+    
+    backgroundView.appearing = NO;
     
     
     void (^adjustTintAutomatic)() = ^() {
